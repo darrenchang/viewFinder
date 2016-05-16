@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>View Finder</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        #gameCanvas {
+            background: #eee;
+            display: block;
+            margin: 0 auto;
+        }
+
+        #mousePos {
+            background: #ddd;
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="gameCanvas" width="600" height="400"></canvas>
+    <canvas id="mousePos" width="600" height="200" ;></canvas>
+    <script>
+        var canvas = document.getElementById("gameCanvas");
+        var canvasB = document.getElementById("mousePos")
+        var ctx = canvas.getContext("2d");
+        var context = canvasB.getContext("2d");
+
+        var xCord = 0;
+        var yCord = 0;
+        var distance = 0;
+        var mousepressed = false;
+
+        var nCircles = Math.floor((Math.random() * 15) + 5);
+        var nSpokes = 3;
+        var circleX = [];
+        var circleY = [];
+        var circleRad = [];
+        var circleSpd = [];
+        var circleStatus = [];
+        for (c = 0; c < nCircles; c++) {
+            circleRad[c] = Math.floor((Math.random() * 50) + 50);
+            circleX[c] = Math.floor((Math.random() * canvas.width - circleRad[c]) + circleRad[c]);
+            circleY[c] = Math.floor((Math.random() * canvas.height - circleRad[c]) + circleRad[c]);
+            circleSpd[c] = Math.floor((Math.random() * 5) + 1);
+            circleStatus[c] = 1;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawCircles();
+            requestAnimationFrame(draw);
+            xCord = 0;
+            yCord = 0;
+            mousepressed = false;
+        }
+
+        function drawCircles() {
+            for (c = 0; c < nCircles; c++) {
+                // inner circle
+                ctx.beginPath();
+                ctx.arc(circleX[c], circleY[c], circleRad[c] / 2, 0, Math.PI * 2);
+                ctx.fillStyle = "rgba(0, 0, 0, .4)";
+                ctx.fill();
+                ctx.closePath();
+
+                // outer circle
+                ctx.beginPath();
+                ctx.arc(circleX[c], circleY[c], circleRad[c], 0, Math.PI * 2);
+                ctx.fillStyle = "rgba(0, 0, 0, .3)";
+                ctx.strokeStyle = "rgba(0, 0, 0, .7)";
+                ctx.stroke();
+                ctx.fill();
+                ctx.closePath();
+
+                // spokes
+                for (k = 0; k < nSpokes; k++) {
+                    var spokeX1 = circleX[c] + circleRad[c] * Math.cos((1 + 4.0 / nSpokes / 2 * k) * Math.PI / 2);
+                    var spokeY1 = circleY[c] + circleRad[c] * Math.sin((1 + 4.0 / nSpokes / 2 * k) * Math.PI / 2);
+                    var spokeX2 = circleX[c] + circleRad[c] * Math.cos((3 + 4.0 / nSpokes / 2 * k) * Math.PI / 2);
+                    var spokeY2 = circleY[c] + circleRad[c] * Math.sin((3 + 4.0 / nSpokes / 2 * k) * Math.PI / 2);
+                    ctx.beginPath();
+                    ctx.moveTo(spokeX1, spokeY1);
+                    ctx.lineTo(spokeX2, spokeY2);
+                    ctx.stroke();
+                    ctx.strokeStyle = "rgba(0, 0, 0, .6)";
+                    ctx.closePath();
+                }
+
+                circleY[c] += circleSpd[c];
+
+                // reset circle if it drops to the bottom
+                if (circleY[c] > canvas.height + circleRad[c]) {
+                    circleReset();
+                }
+                if (distance = Math.dist(circleX[c], circleY[c], xCord, yCord) < circleRad[c] && mousepressed) {
+                    circleReset();
+                }
+            }
+        }
+
+        function circleReset() {
+            circleRad[c] = Math.floor((Math.random() * 50) + 50);
+            circleY[c] = 0 - circleRad[c];
+            circleX[c] = Math.floor((Math.random() * canvas.width - circleRad[c]) + circleRad[c]);
+            circleSpd[c] = Math.floor((Math.random() * 3) + 1);
+        }
+
+        function writeMessage(x, y, canvasB, message) {
+            context.clearRect(0, 0, canvasB.width, canvasB.height);
+            context.font = '18pt Calibri';
+            context.fillStyle = 'black';
+            context.fillText(message, x, y);
+        }
+
+        function getMousePos(canvasB, evt) {
+            var rect = canvas.getBoundingClientRect();
+            return {
+                x: evt.clientX - rect.left,
+                y: evt.clientY - rect.top
+            };
+        }
+
+        canvas.addEventListener('mousemove', function(evt) {
+            var mousePos = getMousePos(canvas, evt);
+            var message = 'Mouse position: ' + mousePos.x + ', ' + mousePos.y + ' ' + xCord + ' ' + yCord + distance;
+            writeMessage(10, 25, canvasB, message);
+        }, false);
+
+        function doMouseDown(event) {
+            var rect = canvas.getBoundingClientRect();
+            xCord = event.clientX - rect.left;
+            yCord = event.clientY - rect.top;
+            mousepressed = true;
+            var message = 'Mouse position: ' + mousePos.x + ', ' + mousePos.y + ' ' + xCord + ' ' + yCord;
+            writeMessage(10, 25, canvasB, message);
+        }
+
+        canvas.addEventListener("mousedown", doMouseDown, false);
+
+        Math.dist = function(x1, y1, x2, y2) {
+            if (!x2) x2 = 0;
+            if (!y2) y2 = 0;
+            return Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+        }
+
+        draw();
+    </script>
+</body>
+
+</html>
