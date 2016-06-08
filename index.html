@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <title>View Finder</title>
     <style>
-        * {
+        body {
             padding: 0;
             margin: 0;
         }
@@ -15,23 +15,14 @@
             display: block;
             margin: 0 auto;
         }
-
-        #mousePos {
-            background: #ddd;
-            display: block;
-            margin: 0 auto;
-        }
     </style>
 </head>
 
 <body>
-    <canvas id="gameCanvas" width="600" height="400"></canvas>
-    <canvas id="mousePos" width="600" height="200" ;></canvas>
+    <canvas id="gameCanvas"></canvas>
     <script>
         var canvas = document.getElementById("gameCanvas");
-        var canvasB = document.getElementById("mousePos")
         var ctx = canvas.getContext("2d");
-        var context = canvasB.getContext("2d");
 
         var xCord = 0;
         var yCord = 0;
@@ -47,15 +38,16 @@
         var circleStatus = [];
         for (c = 0; c < nCircles; c++) {
             circleRad[c] = Math.floor((Math.random() * 50) + 50);
-            circleX[c] = Math.floor((Math.random() * canvas.width - circleRad[c]) + circleRad[c]);
-            circleY[c] = Math.floor((Math.random() * canvas.height - circleRad[c]) + circleRad[c]);
+            circleX[c] = Math.floor((Math.random() * window.innerWidth - circleRad[c]) + circleRad[c]);
+            circleY[c] = -(Math.floor((Math.random() * window.innerHeight - circleRad[c]) + circleRad[c]));
             circleSpd[c] = Math.floor((Math.random() * 5) + 1);
             circleStatus[c] = 1;
         }
 
         function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
             drawCircles();
+            circleReset();
             requestAnimationFrame(draw);
             xCord = 0;
             yCord = 0;
@@ -95,44 +87,23 @@
                 }
 
                 circleY[c] += circleSpd[c];
-
-                // reset circle if it drops to the bottom
-                if (circleY[c] > canvas.height + circleRad[c]) {
-                    circleReset();
-                }
-                if (distance = Math.dist(circleX[c], circleY[c], xCord, yCord) < circleRad[c] && mousepressed) {
-                    circleReset();
-                }
             }
         }
 
         function circleReset() {
-            circleRad[c] = Math.floor((Math.random() * 50) + 50);
-            circleY[c] = 0 - circleRad[c];
-            circleX[c] = Math.floor((Math.random() * canvas.width - circleRad[c]) + circleRad[c]);
-            circleSpd[c] = Math.floor((Math.random() * 3) + 1);
+            for (c = nCircles; c > 0; c--) {
+                // reset circle if it drops to the bottom or clicked
+                if (
+                  (circleY[c] > window.innerHeight + circleRad[c]) ||
+                  (distance = Math.dist(circleX[c], circleY[c], xCord, yCord) < circleRad[c] && mousepressed)
+                ) {
+                    circleRad[c] = Math.floor((Math.random() * 50) + 50);
+                    circleX[c] = Math.floor((Math.random() * window.innerWidth - circleRad[c]) + circleRad[c]);
+                    circleY[c] = 0 - circleRad[c];
+                    circleSpd[c] = Math.floor((Math.random() * 3) + 1);
+                }
+            }
         }
-
-        function writeMessage(x, y, canvasB, message) {
-            context.clearRect(0, 0, canvasB.width, canvasB.height);
-            context.font = '18pt Calibri';
-            context.fillStyle = 'black';
-            context.fillText(message, x, y);
-        }
-
-        function getMousePos(canvasB, evt) {
-            var rect = canvas.getBoundingClientRect();
-            return {
-                x: evt.clientX - rect.left,
-                y: evt.clientY - rect.top
-            };
-        }
-
-        canvas.addEventListener('mousemove', function(evt) {
-            var mousePos = getMousePos(canvas, evt);
-            var message = 'Mouse position: ' + mousePos.x + ', ' + mousePos.y + ' ' + xCord + ' ' + yCord + distance;
-            writeMessage(10, 25, canvasB, message);
-        }, false);
 
         function doMouseDown(event) {
             var rect = canvas.getBoundingClientRect();
@@ -140,8 +111,21 @@
             yCord = event.clientY - rect.top;
             mousepressed = true;
             var message = 'Mouse position: ' + mousePos.x + ', ' + mousePos.y + ' ' + xCord + ' ' + yCord;
-            writeMessage(10, 25, canvasB, message);
         }
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            render();
+        }
+        window.addEventListener('resize', resize, false);
+        resize();
+
+        function render() { // draw to screen here
+        }
+
+        window.addEventListener('resize', resize, false);
+        resize();
 
         canvas.addEventListener("mousedown", doMouseDown, false);
 
