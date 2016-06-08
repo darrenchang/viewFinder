@@ -2,10 +2,15 @@
 <html>
 
 <head>
-    <meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1'>
+    <meta name='viewport' content='width=device-width' user-scalable=no>
     <meta charset="utf-8" />
     <title>View Finder</title>
     <style>
+        * {
+            -ms-touch-action: manipulation;
+            touch-action: manipulation;
+        }
+
         body {
             padding: 0;
             margin: 0;
@@ -95,8 +100,8 @@
             for (c = 0; c < nCircles; c++) {
                 // reset circle if it drops to the bottom or clicked
                 if (
-                  (circleY[c] > window.innerHeight + circleRad[c]) ||
-                  (distance = Math.dist(circleX[c], circleY[c], xCord, yCord) < circleRad[c] && mousepressed)
+                    (circleY[c] > window.innerHeight + circleRad[c]) ||
+                    (distance = Math.dist(circleX[c], circleY[c], xCord, yCord) < circleRad[c] && mousepressed)
                 ) {
                     circleRad[c] = Math.floor((Math.random() * 50) + 50);
                     circleX[c] = Math.floor((Math.random() * window.innerWidth - circleRad[c]) + circleRad[c]);
