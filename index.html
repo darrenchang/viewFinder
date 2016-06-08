@@ -29,7 +29,7 @@
         var distance = 0;
         var mousepressed = false;
 
-        var nCircles = Math.floor((Math.random() * 15) + 5);
+        var nCircles = 2//Math.floor((Math.random() * 15) + 5);
         var nSpokes = 3;
         var circleX = [];
         var circleY = [];
@@ -91,7 +91,7 @@
         }
 
         function circleReset() {
-            for (c = nCircles; c > 0; c--) {
+            for (c = 0; c < nCircles; c++) {
                 // reset circle if it drops to the bottom or clicked
                 if (
                   (circleY[c] > window.innerHeight + circleRad[c]) ||
