@@ -41,12 +41,18 @@
         var circleY = [];
         var circleRad = [];
         var circleSpd = [];
+        var circleColorR = [];
+        var circleColorG = [];
+        var circleColorB = [];
         var circleStatus = [];
         for (c = 0; c < nCircles; c++) {
             circleRad[c] = Math.floor((Math.random() * 50) + 50);
             circleX[c] = Math.floor((Math.random() * window.innerWidth - circleRad[c]) + circleRad[c]);
             circleY[c] = -(Math.floor((Math.random() * window.innerHeight - circleRad[c]) + circleRad[c]));
             circleSpd[c] = Math.floor((Math.random() * 5) + 1);
+            circleColorR[c] = Math.floor(Math.random() * 255);
+            circleColorG[c] = Math.floor(Math.random() * 255);
+            circleColorB[c] = Math.floor(Math.random() * 255);
             circleStatus[c] = 1;
         }
 
@@ -65,15 +71,15 @@
                 // inner circle
                 ctx.beginPath();
                 ctx.arc(circleX[c], circleY[c], circleRad[c] / 2, 0, Math.PI * 2);
-                ctx.fillStyle = "rgba(0, 0, 0, .4)";
+                ctx.fillStyle = "rgba(" + circleColorR[c] + ", " + circleColorG[c] +  ", " + circleColorB[c] + ", .4)";
                 ctx.fill();
                 ctx.closePath();
 
                 // outer circle
                 ctx.beginPath();
                 ctx.arc(circleX[c], circleY[c], circleRad[c], 0, Math.PI * 2);
-                ctx.fillStyle = "rgba(0, 0, 0, .3)";
-                ctx.strokeStyle = "rgba(0, 0, 0, .7)";
+                ctx.fillStyle = "rgba(" + circleColorR[c] + ", " + circleColorG[c] +  ", " + circleColorB[c] + ", .3)";
+                ctx.strokeStyle = "rgba(" + circleColorR[c] + ", " + circleColorG[c] +  ", " + circleColorB[c] + ", .7)";
                 ctx.stroke();
                 ctx.fill();
                 ctx.closePath();
@@ -88,7 +94,7 @@
                     ctx.moveTo(spokeX1, spokeY1);
                     ctx.lineTo(spokeX2, spokeY2);
                     ctx.stroke();
-                    ctx.strokeStyle = "rgba(0, 0, 0, .6)";
+                    ctx.strokeStyle = "rgba(" + circleColorR[c] + ", " + circleColorG[c] +  ", " + circleColorB[c] + ", .6)";
                     ctx.closePath();
                 }
 
